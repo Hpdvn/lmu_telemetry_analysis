@@ -90,28 +90,28 @@ function initializeCharts() {
 }
 
 function updateGearDisplay(gear) {
-  // Réinitialiser les classes CSS
+  // Reset CSS classes
   gearValueEl.className = 'gear-display';
   
   if (gear === -1) {
     gearValueEl.textContent = 'R';
     gearValueEl.classList.add('reverse');
-    gearDescriptionEl.textContent = 'Marche arrière';
+    gearDescriptionEl.textContent = 'Reverse';
   } else if (gear === 0) {
     gearValueEl.textContent = 'N';
     gearValueEl.classList.add('neutral');
-    gearDescriptionEl.textContent = 'Point mort';
+    gearDescriptionEl.textContent = 'Neutral';
   } else if (gear > 0) {
     gearValueEl.textContent = gear.toString();
-    gearDescriptionEl.textContent = `${gear}${gear === 1 ? 'ère' : 'ème'} vitesse`;
+    gearDescriptionEl.textContent = `${gear}${gear === 1 ? 'st' : 'nd'} gear`;
   } else {
     gearValueEl.textContent = '?';
-    gearDescriptionEl.textContent = 'Valeur inconnue';
+    gearDescriptionEl.textContent = 'Unknown value';
   }
 }
 
 function updateBrakeDisplay(brake) {
-  // Convertir en pourcentage et limiter à 100%
+  // Convert to percentage and limit to 100%
   const percentage = Math.min(Math.max(brake * 100, 0), 100);
   brakeValueEl.textContent = `${percentage.toFixed(0)}%`;
   brakeFillEl.style.width = `${percentage}%`;
@@ -129,7 +129,7 @@ function updateBrakeDisplay(brake) {
 }
 
 function updateThrottleDisplay(throttle) {
-  // Convertir en pourcentage et limiter à 100%
+  // Convert to percentage and limit to 100%
   const percentage = Math.min(Math.max(throttle * 100, 0), 100);
   throttleValueEl.textContent = `${percentage.toFixed(0)}%`;
   throttleFillEl.style.width = `${percentage}%`;
@@ -147,65 +147,65 @@ function updateThrottleDisplay(throttle) {
 }
 
 function updateSessionDisplay(session) {
-  // Réinitialiser les classes CSS
+  // Reset CSS classes
   sessionValueEl.className = 'session-display';
   
-  // Démarrer la collecte de données si on entre en qualifications
+  // Start data collection if entering qualifying
   if ((session >= 5 && session <= 8) && !isCollectingData) {
     startDataCollection();
   }
   
-  // Mettre à jour la session courante
+  // Update current session
   currentSession = session;
   
-  // Mapping des valeurs de session selon rF2data.py
+  // Mapping of session values according to rF2data.py
   // 0=testday 1-4=practice 5-8=qual 9=warmup 10-13=race
   if (session === 0) {
     sessionValueEl.textContent = 'TEST';
     sessionValueEl.classList.add('testday');
-    sessionDescriptionEl.textContent = 'Journée de test';
+    sessionDescriptionEl.textContent = 'Test day';
   } else if (session >= 1 && session <= 4) {
     sessionValueEl.textContent = 'P' + session;
     sessionValueEl.classList.add('practice');
-    sessionDescriptionEl.textContent = `Essais libres ${session}`;
+    sessionDescriptionEl.textContent = `Free practice ${session}`;
   } else if (session >= 5 && session <= 8) {
     const qualSession = session - 4;
     sessionValueEl.textContent = 'Q' + qualSession;
     sessionValueEl.classList.add('qualifying');
-    sessionDescriptionEl.textContent = `Qualifications ${qualSession}`;
+    sessionDescriptionEl.textContent = `Qualifying ${qualSession}`;
   } else if (session === 9) {
     sessionValueEl.textContent = 'WARM';
     sessionValueEl.classList.add('warmup');
-    sessionDescriptionEl.textContent = 'Échauffement';
+    sessionDescriptionEl.textContent = 'Warmup';
   } else if (session >= 10 && session <= 13) {
     const raceSession = session - 9;
     sessionValueEl.textContent = 'R' + raceSession;
     sessionValueEl.classList.add('race');
     sessionDescriptionEl.textContent = `Course ${raceSession}`;
     
-    // Afficher le bouton d'export pendant la course
+    // Show export button during race
     updateExportButtonVisibility(true);
   } else {
     sessionValueEl.textContent = '?';
-    sessionDescriptionEl.textContent = 'Session inconnue';
+    sessionDescriptionEl.textContent = 'Unknown session';
   }
   
-  // Cacher le bouton d'export si on n'est pas en course
+  // Hide export button if not in race
   if (session < 10 || session > 13) {
     updateExportButtonVisibility(false);
   }
 }
 
 function startDataCollection() {
-  console.log('Démarrage de la collecte de données de télémétrie');
+  console.log('Starting data collection');
   isCollectingData = true;
-  telemetryData = []; // Reset des données
+  telemetryData = []; // Reset data
 }
 
 function collectTelemetryData(data) {
   if (!isCollectingData) return;
   
-  // Vérifier que toutes les données requises sont présentes
+  // Check that all required data is present
   if (typeof data.session !== 'number' ||
       typeof data.gear !== 'number' ||
       typeof data.brake !== 'number' ||
@@ -213,7 +213,7 @@ function collectTelemetryData(data) {
       !data.driverName ||
       !data.vehicleName ||
       typeof data.place !== 'number') {
-    console.warn('Données incomplètes, point ignoré:', data);
+    console.warn('Incomplete data, point ignored:', data);
     return;
   }
   
@@ -231,7 +231,7 @@ function collectTelemetryData(data) {
   };
   
   telemetryData.push(dataPoint);
-  console.log(`Données collectées: ${telemetryData.length} points`);
+  console.log(`Collected data: ${telemetryData.length} points`);
 }
 
 function updateExportButtonVisibility(visible) {
@@ -245,7 +245,7 @@ function updateTrackDisplay(trackName) {
   if (trackName && trackName.trim()) {
     trackValueEl.textContent = trackName;
   } else {
-    trackValueEl.textContent = 'Circuit inconnu';
+    trackValueEl.textContent = 'Unknown track';
   }
 }
 
@@ -253,12 +253,12 @@ function updateVehicleDisplay(vehicleName) {
   if (vehicleName && vehicleName.trim()) {
     vehicleValueEl.textContent = vehicleName;
   } else {
-    vehicleValueEl.textContent = 'Véhicule inconnu';
+    vehicleValueEl.textContent = 'Unknown vehicle';
   }
 }
 
 function cleanTelemetryData() {
-  // Nettoyer les données incomplètes avant l'export
+  // Clean incomplete data before export
   const cleanedData = telemetryData.filter(point => {
     return typeof point.session === 'number' &&
            typeof point.gear === 'number' &&
@@ -270,7 +270,7 @@ function cleanTelemetryData() {
   });
   
   if (cleanedData.length !== telemetryData.length) {
-    console.log(`Nettoyage: ${telemetryData.length - cleanedData.length} points incomplets supprimés`);
+    console.log(`Cleaning: ${telemetryData.length - cleanedData.length} incomplete points removed`);
   }
   
   return cleanedData;
@@ -278,21 +278,21 @@ function cleanTelemetryData() {
 
 async function exportTelemetryData() {
   if (telemetryData.length === 0) {
-    alert('Aucune donnée à exporter');
+    alert('No data to export');
     return;
   }
   
-  // Nettoyer les données avant l'export
+  // Clean data before export
   const cleanedData = cleanTelemetryData();
   
   if (cleanedData.length === 0) {
-    alert('Aucune donnée complète à exporter');
+    alert('No complete data to export');
     return;
   }
   
   const exportBtn = document.getElementById('exportBtn');
   const originalText = exportBtn.textContent;
-  exportBtn.textContent = 'Export en cours...';
+  exportBtn.textContent = 'Export in progress...';
   exportBtn.disabled = true;
   
   try {
@@ -314,20 +314,20 @@ async function exportTelemetryData() {
     
     if (response.ok) {
       const result = await response.json();
-      const message = `Export réussi ! 
-Fichier: ${result.filename}
-Points exportés: ${cleanedData.length}
+      const message = `Export successful! 
+File: ${result.filename}
+Points exported: ${cleanedData.length}
 ${telemetryData.length !== cleanedData.length ? 
-  `Points supprimés (incomplets): ${telemetryData.length - cleanedData.length}` : ''}`;
+  `Points removed (incomplete): ${telemetryData.length - cleanedData.length}` : ''}`;
       alert(message);
     } else {
       const errorData = await response.json();
-      console.error('Détails de l\'erreur:', errorData);
-      throw new Error('Erreur lors de l\'export');
+      console.error('Error details:', errorData);
+      throw new Error('Error during export');
     }
   } catch (error) {
-    console.error('Erreur export:', error);
-    alert('Erreur lors de l\'export des données');
+    console.error('Error during export:', error);
+    alert('Error during export');
   } finally {
     exportBtn.textContent = originalText;
     exportBtn.disabled = false;
@@ -338,7 +338,7 @@ function connectWebSocket() {
   sock = new WebSocket(WS_URL);
 
   sock.onopen = () => {
-    statusEl.textContent = 'Connecté';
+    statusEl.textContent = 'Connected';
     statusEl.className = 'status connected';
     console.log('WebSocket connected');
   };
@@ -348,11 +348,11 @@ function connectWebSocket() {
     try {
       obj = JSON.parse(evt.data);
     } catch (e) {
-      console.warn("JSON invalide:", e);
+      console.warn("Invalid JSON:", e);
       return;
     }
     
-    // Mettre à jour les affichages
+    // Update displays
     if (typeof obj.gear === 'number') {
       updateGearDisplay(obj.gear);
     }
@@ -372,25 +372,25 @@ function connectWebSocket() {
       updateVehicleDisplay(obj.vehicleName);
     }
     
-    // Collecter les données pour l'export
+    // Collect data for export
     collectTelemetryData(obj);
   };
 
   sock.onclose = (ev) => {
-    statusEl.textContent = 'Déconnecté - Reconnexion...';
+    statusEl.textContent = 'Disconnected - Reconnecting...';
     statusEl.className = 'status disconnected';
     gearValueEl.textContent = '-';
-    gearDescriptionEl.textContent = 'Connexion perdue';
+    gearDescriptionEl.textContent = 'Connection lost';
     sessionValueEl.textContent = '-';
-    sessionDescriptionEl.textContent = 'Connexion perdue';
+    sessionDescriptionEl.textContent = 'Connection lost';
     trackValueEl.textContent = '-';
     vehicleValueEl.textContent = '-';
     setTimeout(connectWebSocket, 1000);
   };
 
   sock.onerror = (err) => {
-    console.error("Erreur WebSocket:", err);
-    statusEl.textContent = 'Erreur de connexion';
+    console.error("WebSocket error:", err);
+    statusEl.textContent = 'Connection error';
     statusEl.className = 'status disconnected';
   };
 }

@@ -1,124 +1,81 @@
-# rFactor 2 WebSocket Server (Python)
+# Le Mans Ultimate WebSocket Server (Python)
 
-Ce serveur WebSocket Python fournit les données de télémétrie rFactor 2 en temps réel, équivalent à l'implémentation Go.
+This Python WebSocket server provides real-time LMU telemetry data.
 
-## Prérequis
+## Prerequisites
 
-- **Python 3.7+** (requis pour asyncio et websockets)
-- **rFactor 2** en cours d'exécution
-- **Windows** (pour l'accès à la mémoire partagée rF2)
+- **Python 3.7+** (required for asyncio and websockets)
+- **Le Mans Ultimate** running
+- **Windows** (for rF2 shared memory access)
 
 ## Installation
 
-1. Installez les dépendances :
+1. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-Ou installez manuellement :
-```bash
-pip install websockets>=12.0
-```
+## Usage
 
-## Utilisation
+1. **Launch LMU** and load a session (practice, qualify, or race)
 
-1. **Lancez rFactor 2** et chargez une session (practice, qualify, ou race)
-
-2. **Démarrez le serveur WebSocket** :
+2. **Start the WebSocket server**:
 ```bash
 python websocket_server.py
 ```
 
-3. Le serveur sera disponible à l'adresse : `ws://localhost:8080`
+3. The server will be available at: `ws://localhost:8080/ws`
 
-## Fonctionnalités
+## Features
 
-Le serveur envoie les données JSON suivantes toutes les secondes :
+The server sends the following JSON data every second:
 
 ```json
 {
-  "driverName": "Nom du pilote",
-  "vehicleName": "Nom du véhicule", 
-  "place": 1,
-  "gear": 3,
-  "brake": 0.0,
-  "throttle": 0.85
+  "driverName": "Hugo PDVN",
+  "vehicleName": "Manthey 2025 #90:LM", 
+  "trackName": "Le Mans 2025",
+  "place": 16, //(1-based)
+  "gear": 1, //(-1=reverse, 0=neutral, 1+=forward gears)
+  "brake": 0.0, //(0.0-1.0)
+  "throttle": 0.3756, //(0.0-1.0)
+  "session": 10
 }
 ```
 
-### Données disponibles :
-- **driverName** : Nom du pilote
-- **vehicleName** : Nom du véhicule
-- **place** : Position dans la course (1-based)
-- **gear** : Vitesse engagée (-1=marche arrière, 0=neutre, 1+=vitesses avant)
-- **brake** : Pression de frein (0.0-1.0)
-- **throttle** : Position de l'accélérateur (0.0-1.0)
+## Testing the server
 
-## Test du serveur
-
-Vous pouvez tester le serveur avec un client WebSocket simple. Exemple avec JavaScript dans le navigateur :
+You can test the server with a simple WebSocket client. Example with JavaScript in the browser:
 
 ```javascript
-const ws = new WebSocket('ws://localhost:8080');
+const ws = new WebSocket('ws://localhost:8080/ws');
 
 ws.onopen = function() {
-    console.log('Connecté au serveur WebSocket rF2');
+    console.log('Connected to rF2 WebSocket server');
 };
 
 ws.onmessage = function(event) {
     const data = JSON.parse(event.data);
-    console.log('Données reçues:', data);
+    console.log('Data received:', data);
 };
 
 ws.onclose = function() {
-    console.log('Connexion fermée');
+    console.log('Connection closed');
 };
 ```
 
-## Architecture
+## Display
 
-Le serveur Python suit la même architecture que la version Go :
+You can use whatever frontend you would like to use to display all the data. A simple one is provided at the root of the repo.
 
-1. **SimInfo** : Connexion à la mémoire partagée rF2
-2. **find_player_vehicle()** : Recherche du véhicule joueur dans les données de scoring
-3. **find_player_telemetry()** : Récupération des données de télémétrie correspondantes
-4. **WebSocket Handler** : Envoi des données JSON toutes les secondes
+## Development
 
-## Dépannage
+To modify the server:
 
-### "Failed to connect to rF2 shared memory"
-- Vérifiez que rFactor 2 est lancé
-- Assurez-vous d'être dans une session active (pas seulement dans les menus)
-- Vérifiez que vous êtes sur Windows (la mémoire partagée rF2 n'est disponible que sur Windows)
+1. **Add new data**: Modify the `TelemetryResponse` class and the `get_telemetry_data()` method based on the `rF2data.py` file
+2. **Change frequency**: Modify the value in `await asyncio.sleep(1.0)`
+3. **Modify port**: Change the default value in `RF2WebSocketServer()`
 
-### "No player vehicle found"
-- Assurez-vous d'être dans une session avec un véhicule (practice, qualify, race)
-- Vérifiez que vous contrôlez effectivement un véhicule dans le jeu
+## License
 
-### Erreurs de connexion WebSocket
-- Vérifiez que le port 8080 n'est pas utilisé par une autre application
-- Testez avec un client WebSocket simple pour vérifier la connectivité
-
-## Comparaison avec la version Go
-
-Cette implémentation Python est fonctionnellement équivalente à la version Go :
-
-| Fonctionnalité | Go | Python |
-|----------------|-------|--------|
-| Serveur WebSocket | ✅ | ✅ |
-| Accès mémoire partagée | ✅ | ✅ |
-| Mise à jour 1Hz | ✅ | ✅ |
-| Données JSON identiques | ✅ | ✅ |
-| Gestion multi-clients | ✅ | ✅ |
-
-## Développement
-
-Pour modifier le serveur :
-
-1. **Ajouter de nouvelles données** : Modifiez la classe `TelemetryResponse` et la méthode `get_telemetry_data()`
-2. **Changer la fréquence** : Modifiez la valeur dans `await asyncio.sleep(1.0)`
-3. **Modifier le port** : Changez la valeur par défaut dans `RF2WebSocketServer()`
-
-## Licence
-
-Ce code utilise les structures de données rF2 de The Iron Wolf's rF2 Shared Memory Tools.
+This code uses rF2 data structures from The Iron Wolf's rF2 Shared Memory Tools.

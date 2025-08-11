@@ -10,7 +10,7 @@ import os
 from datetime import datetime
 from rF2data import SimInfo
 
-app = FastAPI(title="rF2 Telemetry API", description="API for rFactor2 telemetry data")
+app = FastAPI(title="LMU Telemetry API", description="API for LMU telemetry data")
 
 # Add CORS middleware to allow frontend requests
 app.add_middleware(
@@ -201,7 +201,7 @@ async def export_telemetry_csv(request: ExportRequest):
         driver_name = request.data[0].driverName.replace(" ", "_") if request.data else "unknown"
         vehicle_name = request.data[0].vehicleName.replace(" ", "_") if request.data else "unknown"
         track_name = request.sessionInfo.trackName.replace(" ", "_") if request.sessionInfo else "unknown"
-        filename = f"telemetry_{driver_name}_{timestamp}.csv"
+        filename = f"telemetry_{driver_name}_{track_name}_{vehicle_name}_{timestamp}.csv"
         filepath = os.path.join("export", filename)
         
         # Ensure export directory exists
@@ -237,7 +237,7 @@ async def export_telemetry_csv(request: ExportRequest):
         
         return JSONResponse(content={
             "success": True,
-            "message": "Export CSV réussi",
+            "message": "CSV export successful",
             "filename": filename,
             "filepath": filepath,
             "total_points": len(request.data),
@@ -249,8 +249,8 @@ async def export_telemetry_csv(request: ExportRequest):
         })
         
     except Exception as e:
-        print(f"Erreur lors de l'export CSV: {e}")
-        raise HTTPException(status_code=500, detail=f"Erreur lors de l'export CSV: {str(e)}")
+        print(f"Error during CSV export: {e}")
+        raise HTTPException(status_code=500, detail=f"Error during CSV export: {str(e)}")
 
 def get_session_name(session: int) -> str:
     """Convert session number to readable name"""
@@ -271,7 +271,7 @@ def get_session_name(session: int) -> str:
 def root():
     """API information and available endpoints"""
     return {
-        "message": "rF2 Telemetry API",
+        "message": "LMU Telemetry API",
         "version": "2.1",
         "endpoints": {
             "/data": "Complete telemetry data (acceleration, braking, gear, etc.)",

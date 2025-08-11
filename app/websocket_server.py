@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Python WebSocket server for rFactor 2 telemetry data
-Equivalent to the Go implementation in main.go
+Python WebSocket server for LMU telemetry data
 """
 
 import asyncio
@@ -12,7 +11,7 @@ from typing import Optional, Dict, Any
 import websockets
 from websockets.server import WebSocketServerProtocol
 
-# Import our rF2 data structures
+# Import our LMU data structures
 from rF2data import SimInfo, Cbytestring2Python, rFactor2Constants
 
 # Configure logging
@@ -22,7 +21,7 @@ logger.setLevel(logging.DEBUG)
 
 
 class TelemetryResponse:
-    """Data structure for WebSocket response, equivalent to Go's TelemetryResponse"""
+    """Data structure for WebSocket response"""
     
     def __init__(self, driver_name: str, vehicle_name: str, track_name: str, place: int, 
                  gear: int, brake: float, throttle: float, session: int):
@@ -49,8 +48,8 @@ class TelemetryResponse:
         }
 
 
-class RF2WebSocketServer:
-    """WebSocket server for rFactor 2 telemetry data"""
+class LMUWebSocketServer:
+    """WebSocket server for LMU telemetry data"""
     
     def __init__(self, host: str = "localhost", port: int = 8080):
         self.host = host
@@ -59,17 +58,17 @@ class RF2WebSocketServer:
         self.active_connections = set()
         
     async def initialize_sim_info(self) -> bool:
-        """Initialize connection to rF2 shared memory"""
+        """Initialize connection to LMU shared memory"""
         try:
             self.sim_info = SimInfo()
-            logger.info("Successfully connected to rF2 shared memory")
+            logger.info("Successfully connected to LMU shared memory")
             return True
         except Exception as e:
-            logger.error(f"Failed to connect to rF2 shared memory: {e}")
+            logger.error(f"Failed to connect to LMU shared memory: {e}")
             return False
     
     def find_player_vehicle(self):
-        """Find the player vehicle from scoring data, equivalent to Go's findPlayerVehicleID"""
+        """Find the player vehicle from scoring data"""
         if not self.sim_info or not self.sim_info.Rf2Scor:
             logger.error("No scoring data found")
             return None, -1
@@ -85,7 +84,7 @@ class RF2WebSocketServer:
         return None, -1
     
     def find_player_telemetry(self, player_id: int):
-        """Find telemetry data for player vehicle by matching ID, equivalent to Go's findPlayerTelemetry"""
+        """Find telemetry data for player vehicle by matching ID"""
         if not self.sim_info or not self.sim_info.Rf2Tele:
             return None
         
@@ -141,7 +140,7 @@ class RF2WebSocketServer:
             return None
     
     async def handle_client(self, websocket: WebSocketServerProtocol):
-        """Handle WebSocket client connection, equivalent to Go's wsHandler"""
+        """Handle WebSocket client connection"""
         client_address = f"{websocket.remote_address[0]}:{websocket.remote_address[1]}"
         logger.info(f"New WebSocket connection from {client_address}")
         
@@ -149,14 +148,14 @@ class RF2WebSocketServer:
         self.active_connections.add(websocket)
         
         try:
-            # Send data every 1000ms (1 second) like in the Go version
+            # Send data every 1000ms (1 second)
             while True:
                 telemetry_data = self.get_telemetry_data()
                 
                 if telemetry_data:
                     # Convert to JSON and send
                     json_data = json.dumps(telemetry_data.to_dict())
-                    logger.info(json_data)  # Log the data like in Go version
+                    logger.info(json_data)
                     
                     await websocket.send(json_data)
                 else:
@@ -164,7 +163,6 @@ class RF2WebSocketServer:
                     status_msg = json.dumps({"status": "no_player_vehicle_found"})
                     await websocket.send(status_msg)
                 
-                # Wait 1 second before next update (equivalent to Go's ticker)
                 await asyncio.sleep(0.1)
                 
         except websockets.exceptions.ConnectionClosed:
@@ -177,9 +175,9 @@ class RF2WebSocketServer:
     
     async def start_server(self):
         """Start the WebSocket server"""
-        # Initialize connection to rF2
+        # Initialize connection to LMU
         if not await self.initialize_sim_info():
-            logger.error("Failed to initialize rF2 connection. Make sure rFactor 2 is running.")
+            logger.error("Failed to initialize LMU connection. Make sure LMU is running.")
             return
         
         # Start WebSocket server
@@ -189,7 +187,7 @@ class RF2WebSocketServer:
             self.handle_client, 
             self.host, 
             self.port,
-            subprotocols=[]  # Allow all origins like in Go version
+            subprotocols=[]
         ):
             logger.info(f"WebSocket server started on ws://{self.host}:{self.port}")
             # Keep the server running indefinitely
@@ -199,12 +197,12 @@ class RF2WebSocketServer:
         """Cleanup resources"""
         if self.sim_info:
             self.sim_info.close()
-            logger.info("Closed rF2 shared memory connection")
+            logger.info("Closed LMU shared memory connection")
 
 
 async def main():
     """Main function to start the server"""
-    server = RF2WebSocketServer(host="localhost", port=8080)
+    server = LMUWebSocketServer(host="localhost", port=8080)
     
     try:
         await server.start_server()
@@ -217,9 +215,9 @@ async def main():
 
 
 if __name__ == "__main__":
-    print("rFactor 2 WebSocket Server")
+    print("LMU WebSocket Server")
     print("==========================")
-    print("Make sure rFactor 2 is running before starting this server.")
+    print("Make sure LMU is running before starting this server.")
     print("Server will be available at: ws://localhost:8080")
     print("Press Ctrl+C to stop the server")
     print()
