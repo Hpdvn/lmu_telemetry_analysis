@@ -1,0 +1,5 @@
+# Requirements for rFactor 2 WebSocket Server
+# Python 3.7+ required for asyncio and websockets
+
+# WebSocket server library - latest stable version (2024)
+websockets>=12.0

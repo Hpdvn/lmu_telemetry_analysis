@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>LMU Telemetry - Rapport Engagé</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/smoothie@1.36.1/smoothie.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="title">TÉLÉMÉTRIE LMU</div>
+    
+    <!-- État de la session -->
+    <div class="session-section">
+      <div class="session-title">SESSION</div>
+      <div class="session-display" id="sessionValue">-</div>
+      <div class="session-description" id="sessionDescription">En attente...</div>
+    </div>
+    
+    <!-- Informations véhicule et circuit -->
+    <div class="info-section">
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-title">🏁 CIRCUIT</div>
+          <div class="info-value" id="trackValue">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-title">🚗 VÉHICULE</div>
+          <div class="info-value" id="vehicleValue">-</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Rapport -->
+    <div class="section">
+      <div class="section-title">RAPPORT</div>
+      <div class="gear-display" id="gearValue">-</div>
+      <div class="gear-description" id="gearDescription">En attente...</div>
+    </div>
+    
+    <!-- Freinage et Accélération -->
+    <div class="controls-section">
+      <div class="control-item">
+        <div class="control-title">FREINAGE</div>
+        <div class="control-value brake" id="brakeValue">0%</div>
+        <div class="control-bar">
+          <div class="control-fill brake" id="brakeFill"></div>
+        </div>
+      </div>
+      
+      <div class="control-item">
+        <div class="control-title">ACCÉLÉRATION</div>
+        <div class="control-value throttle" id="throttleValue">0%</div>
+        <div class="control-bar">
+          <div class="control-fill throttle" id="throttleFill"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <div class="section-title">ÉVOLUTION TEMPORELLE</div>
+      <div class="charts-grid">
+        <div class="chart-container">
+          <div class="chart-title">Freinage</div>
+          <canvas id="brakeChart" class="chart-canvas"></canvas>
+        </div>
+        <div class="chart-container">
+          <div class="chart-title">Accélération</div>
+          <canvas id="throttleChart" class="chart-canvas"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Export Button -->
+    <div class="export-section">
+      <button id="exportBtn" class="export-button" onclick="exportTelemetryData()" style="display: none;">
+        📊 Exporter les données CSV
+      </button>
+    </div>
+    
+    <div class="status connecting" id="status">Connexion en cours...</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
