@@ -1,2 +1,14 @@
 .venv/
 /export/
+__pycache__/
+**/__pycache__/
+**/venv/
+**/env/
+**/node_modules/
+**/dist/
+**/build/
+**/*.pyc
+**/secrets.toml
+**/app/data/*
+**/test/*
+**/tests/*
