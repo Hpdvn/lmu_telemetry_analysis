@@ -10,6 +10,6 @@ This Python WebSocket server provides real-time LMU telemetry data.
 
 ## License
 
-This code uses rF2 data structures from The Iron Wolf's rF2 Shared Memory Tools.
+This code uses rF2 data structures from https://github.com/TonyWhitley/pyRfactor2SharedMemory
 
 ![Le Mans Ultimate](https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/LeMansUltimateLogo.png/640px-LeMansUltimateLogo.png)
